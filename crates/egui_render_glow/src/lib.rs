@@ -317,13 +317,6 @@ impl Painter {
                     c.pixels.iter().flat_map(egui::Color32::to_array).collect(),
                     c.size,
                 ),
-                egui::ImageData::Font(font_image) => (
-                    font_image
-                        .srgba_pixels(None)
-                        .flat_map(|c| c.to_array())
-                        .collect(),
-                    font_image.size,
-                ),
             };
             if let Some(pos) = delta.pos {
                 glow_context.tex_sub_image_2d(
@@ -501,7 +494,7 @@ impl Painter {
 /// 2. but this `y` is represents top border + y units. in opengl, we need units from bottom border  
 /// 3. we know that for any point y, distance between top and y + distance between bottom and y gives us total height
 /// 4. so, height - y units from top gives us y units from bottom.
-/// math is suprisingly hard to write down.. just draw it on a paper, it makes sense.
+///    math is suprisingly hard to write down.. just draw it on a paper, it makes sense.
 pub fn scissor_from_clip_rect_opengl(
     clip_rect: &egui::Rect,
     scale: f32,

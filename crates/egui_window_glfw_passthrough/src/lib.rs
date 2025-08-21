@@ -18,11 +18,11 @@ use tracing::info;
 /// So, there are two different units used when referring to size/position.
 /// 1. physical size. This is size in raw physical pixels of the framebuffer.
 /// 2. virtual screen coordinates (units). These may or may not be the same size as the pixels.
-/// Almost all sizes glfw gives us are in virtual units except monitor size (millimeters) and framebuffer size (physical pixels).
-/// Glfw also allows us to query "Content scale". This is a `float` by which we should be scaling our UI.
-/// In simple terms, if we use a scale of 1.0 on a 1080p monitor of 22 inches, a character might take 20 pixels.
-/// But on a 1080p phone screen of 6 inches, the user won't be able to read text of 20 pixels. So, usually, the content scale will be around 3.0-4.0.
-/// This makes the character take 60-80 pixels, and be a readable size on the tiny hidpi phone screen.
+///    Almost all sizes glfw gives us are in virtual units except monitor size (millimeters) and framebuffer size (physical pixels).
+///    Glfw also allows us to query "Content scale". This is a `float` by which we should be scaling our UI.
+///    In simple terms, if we use a scale of 1.0 on a 1080p monitor of 22 inches, a character might take 20 pixels.
+///    But on a 1080p phone screen of 6 inches, the user won't be able to read text of 20 pixels. So, usually, the content scale will be around 3.0-4.0.
+///    This makes the character take 60-80 pixels, and be a readable size on the tiny hidpi phone screen.
 ///
 /// But egui deals with units based on the winit system of physical/logical units.
 /// winit has physical pixels. And it uses content scale, to define "logical points". So, on a screen with a scale of 2.0, logical points are made up of 2 pixels per point.
@@ -874,7 +874,7 @@ pub fn egui_to_glfw_cursor(cursor: egui::CursorIcon) -> glfw::StandardCursor {
 type em_callback_func = unsafe extern "C" fn();
 
 #[allow(unused)]
-const CANVAS_ELEMENT_NAME: *const std::ffi::c_char = "#canvas\0".as_ptr() as _;
+const CANVAS_ELEMENT_NAME: *const std::ffi::c_char = c"#canvas".as_ptr() as _;
 extern "C" {
     // This extern is built in by Emscripten.
     pub fn emscripten_run_script_int(x: *const std::ffi::c_uchar) -> std::ffi::c_int;
@@ -900,9 +900,9 @@ extern "C" {
 
 thread_local!(static MAIN_LOOP_CALLBACK: std::cell::RefCell<Option<Box<dyn FnMut()>>>  = std::cell::RefCell::new(None));
 
-pub fn set_main_loop_callback<F: 'static>(callback: F)
+pub fn set_main_loop_callback<F>(callback: F)
 where
-    F: FnMut(),
+    F: FnMut() + 'static,
 {
     MAIN_LOOP_CALLBACK.with(|log| {
         *log.borrow_mut() = Some(Box::new(callback));
