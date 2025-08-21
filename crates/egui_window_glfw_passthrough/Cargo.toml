@@ -8,14 +8,13 @@ license.workspace = true
 
 [features]
 default = ["glfw/default"]
-all = ["glfw_sys", "vulkan", "log", "image"]
-glfw_sys = ["glfw/glfw-sys-passthrough"]
+all = ["vulkan", "log", "image"]
 vulkan = ["glfw/vulkan"]
 log = ["glfw/log"]
 image = ["glfw/image"]
 
 
 [dependencies]
-glfw = { version = "0.55", package = "glfw-passthrough", default-features = false }
+glfw = "0.60.0"
 tracing = { workspace = true }
 egui = { workspace = true }

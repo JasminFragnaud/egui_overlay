@@ -83,6 +83,7 @@ impl SurfaceManager {
                     mip_level_count: None,
                     base_array_layer: 0,
                     array_layer_count: None,
+                    usage: None,
                 });
 
             self.surface_view = Some(surface_view);

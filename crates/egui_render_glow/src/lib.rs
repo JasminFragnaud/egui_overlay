@@ -328,7 +328,7 @@ impl Painter {
                     size[1] as i32,
                     glow::RGBA,
                     glow::UNSIGNED_BYTE,
-                    glow::PixelUnpackData::Slice(&pixels),
+                    glow::PixelUnpackData::Slice(Some(&pixels)),
                 )
             } else {
                 match texture_id {
@@ -351,7 +351,7 @@ impl Painter {
                     0,
                     glow::RGBA,
                     glow::UNSIGNED_BYTE,
-                    Some(&pixels),
+                    glow::PixelUnpackData::Slice(Some(&pixels)),
                 );
             }
             glow_error!(glow_context);

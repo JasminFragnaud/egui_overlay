@@ -179,7 +179,7 @@ impl EguiPainter {
                 entry_point: Some("vs_main"),
                 buffers: &VERTEX_BUFFER_LAYOUT,
                 compilation_options: PipelineCompilationOptions {
-                    constants: &Default::default(),
+                    constants: Default::default(),
                     zero_initialize_workgroup_memory: false,
                 },
             },
@@ -200,7 +200,7 @@ impl EguiPainter {
                     write_mask: ColorWrites::ALL,
                 })],
                 compilation_options: PipelineCompilationOptions {
-                    constants: &Default::default(),
+                    constants: Default::default(),
                     zero_initialize_workgroup_memory: false,
                 },
             }),
@@ -303,7 +303,7 @@ impl EguiPainter {
                 entry_point: Some("vs_main"),
                 buffers: &[],
                 compilation_options: PipelineCompilationOptions {
-                    constants: &Default::default(),
+                    constants: Default::default(),
                     zero_initialize_workgroup_memory: false,
                 },
             },
@@ -312,7 +312,7 @@ impl EguiPainter {
                 entry_point: Some("fs_main"),
                 targets: &[Some(TextureFormat::Rgba8UnormSrgb.into())],
                 compilation_options: PipelineCompilationOptions {
-                    constants: &Default::default(),
+                    constants: Default::default(),
                     zero_initialize_workgroup_memory: false,
                 },
             }),
@@ -435,7 +435,7 @@ impl EguiPainter {
                 // we only update part of the texture, if the tex id refers to a live texture
                 if let Some(tex) = tex {
                     queue.write_texture(
-                        ImageCopyTexture {
+                        TexelCopyTextureInfo {
                             texture: &tex.texture,
                             mip_level: 0,
                             origin: Origin3d {
@@ -446,7 +446,7 @@ impl EguiPainter {
                             aspect: TextureAspect::All,
                         },
                         data_bytes,
-                        ImageDataLayout {
+                        TexelCopyBufferLayout {
                             offset: 0,
                             bytes_per_row: Some(size.width * 4),
                             // only required in 3d textures or 2d array textures
@@ -470,14 +470,14 @@ impl EguiPainter {
                 });
 
                 queue.write_texture(
-                    ImageCopyTexture {
+                    TexelCopyTextureInfo {
                         texture: &new_texture,
                         mip_level: 0,
                         origin: Origin3d::default(),
                         aspect: TextureAspect::All,
                     },
                     data_bytes,
-                    ImageDataLayout {
+                    TexelCopyBufferLayout {
                         offset: 0,
                         bytes_per_row: Some(size.width * 4),
                         rows_per_image: None,
@@ -493,6 +493,7 @@ impl EguiPainter {
                     mip_level_count: Some(mip_level_count),
                     base_array_layer: 0,
                     array_layer_count: None,
+                    usage: None,
                 });
                 assert!(delta.options.magnification == delta.options.minification);
                 let bindgroup = dev.create_bind_group(&BindGroupDescriptor {
@@ -548,6 +549,7 @@ impl EguiPainter {
                             mip_level_count: Some(1),
                             base_array_layer: 0,
                             array_layer_count: None,
+                            usage: None,
                         })
                     })
                     .collect::<Vec<_>>();
@@ -579,6 +581,7 @@ impl EguiPainter {
                                 load: wgpu::LoadOp::Clear(wgpu::Color::WHITE),
                                 store: StoreOp::Store,
                             },
+                            depth_slice: None,
                         })],
                         ..Default::default()
                     });

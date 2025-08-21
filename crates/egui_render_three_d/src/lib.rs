@@ -1,5 +1,5 @@
 use egui::{ClippedPrimitive, TexturesDelta};
-pub use egui_render_glow::*;
+use egui_render_glow::{GlowBackend, GlowConfig};
 pub use three_d;
 use three_d::Context;
 pub struct ThreeDBackend {

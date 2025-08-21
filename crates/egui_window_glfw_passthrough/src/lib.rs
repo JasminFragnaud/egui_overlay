@@ -143,7 +143,7 @@ impl GlfwBackend {
             )
             .expect("failed to create glfw window");
         let api = window.get_client_api();
-        if api == glfw::ffi::OPENGL_API || api == glfw::ffi::OPENGL_ES_API {
+        if api == glfw::ffi::GLFW_OPENGL_API || api == glfw::ffi::GLFW_OPENGL_ES_API {
             window.make_current();
         }
         let should_poll = true;
@@ -276,15 +276,18 @@ impl GlfwBackend {
     pub fn is_opengl(&self) -> bool {
         let api = self.window.get_client_api();
         match api {
-            glfw::ffi::OPENGL_API | glfw::ffi::OPENGL_ES_API => true,
-            glfw::ffi::NO_API => false,
+            glfw::ffi::GLFW_OPENGL_API | glfw::ffi::GLFW_OPENGL_ES_API => true,
+            glfw::ffi::GLFW_NO_API => false,
             rest => panic!("invalid client api hint {rest}"),
         }
     }
 
     pub fn get_proc_address(&mut self, symbol: &str) -> *const core::ffi::c_void {
         if self.is_opengl() {
-            self.window.get_proc_address(symbol)
+            self.window
+                .get_proc_address(symbol)
+                .map(|f| f as *const core::ffi::c_void)
+                .unwrap_or(std::ptr::null())
         } else {
             unimplemented!("window is not opengl. cannot use get_proc_address.");
         }

@@ -29,6 +29,7 @@ impl Default for WgpuConfig {
                 required_features: Default::default(),
                 required_limits: Limits::downlevel_defaults(),
                 memory_hints: MemoryHints::default(),
+                trace: Default::default(),
             },
             surface_config: SurfaceConfiguration {
                 usage: TextureUsages::RENDER_ATTACHMENT,
@@ -87,11 +88,11 @@ impl WgpuBackend {
             transparent_surface,
         } = config;
         debug!("using wgpu backends: {:?}", backends);
-        let instance = Arc::new(Instance::new(InstanceDescriptor {
+        let instance = Arc::new(Instance::new(&InstanceDescriptor {
             backends,
-            dx12_shader_compiler: Default::default(),
             flags: InstanceFlags::from_build_config(),
-            gles_minor_version: Gles3MinorVersion::Automatic,
+            backend_options: BackendOptions::default(),
+            memory_budget_thresholds: MemoryBudgetThresholds::default(),
         }));
         debug!("iterating over all adapters");
         #[cfg(not(target_arch = "wasm32"))]
@@ -122,7 +123,7 @@ impl WgpuBackend {
 
         info!("chosen adapter details: {:?}", adapter.get_info());
         let (device, queue) = adapter
-            .request_device(&device_descriptor, Default::default())
+            .request_device(&device_descriptor)
             .await
             .expect("failed to create wgpu device");
 
@@ -209,6 +210,7 @@ impl WgpuBackend {
                         load: LoadOp::Clear(wgpu::Color::TRANSPARENT),
                         store: StoreOp::Store,
                     },
+                    depth_slice: None,
                 })],
                 ..Default::default()
             });
@@ -253,6 +255,7 @@ impl WgpuBackend {
                         load: LoadOp::Load,
                         store: StoreOp::Store,
                     },
+                    depth_slice: None,
                 })],
                 ..Default::default()
             });
